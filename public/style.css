@@ -1,0 +1,956 @@
+/* =============================================================================
+   style.css — Multiplayer Gwent Stylesheet
+   =============================================================================
+   Dark medieval fantasy theme faithful to The Witcher 3 Gwent aesthetic.
+   Inspired by arunsundaram.com/gwent-classic-app.
+   ============================================================================= */
+
+/* ---- RESET & BASE ---- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Arial Narrow', Arial, sans-serif;
+  background: #0a0a0a;
+  color: #e0e0e0;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #131313;
+}
+::-webkit-scrollbar-thumb {
+  background: #5559;
+  border-radius: 4px;
+  border: 1px double black;
+}
+
+/* =============================================================================
+   LOBBY — Faction & leader selection screen
+   ============================================================================= */
+#lobby {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  gap: 20px;
+  background: radial-gradient(ellipse at center, #1a1510 0%, #0a0a0a 70%);
+}
+
+#lobby h1 {
+  font-size: 4rem;
+  color: goldenrod;
+  text-shadow: 0 0 30px rgba(218, 165, 32, 0.5), 0 0 60px rgba(218, 165, 32, 0.2);
+  letter-spacing: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+#lobby h2 {
+  font-size: 1.2rem;
+  color: tan;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+}
+
+/* Faction selection buttons */
+.faction-select, .leader-select {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.faction-btn, .leader-btn-option {
+  background: rgba(20, 20, 20, 0.9);
+  border: 2px ridge rgb(40, 40, 40);
+  color: tan;
+  padding: 16px 30px;
+  font-size: 1.1rem;
+  font-family: 'Arial Narrow', Arial, sans-serif;
+  cursor: pointer;
+  border-radius: 4px;
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.25s;
+}
+
+.faction-btn:hover, .leader-btn-option:hover {
+  border-color: goldenrod;
+  box-shadow: 0 0 20px rgba(218, 165, 32, 0.3);
+  color: goldenrod;
+}
+
+.faction-icon {
+  font-size: 1.5rem;
+  color: goldenrod;
+}
+
+.faction-passive {
+  font-size: 0.75rem;
+  color: #82735f;
+  font-style: italic;
+}
+
+.leader-desc {
+  font-size: 0.8rem;
+  color: #82735f;
+  margin-top: 4px;
+}
+
+.back-btn {
+  background: rgba(20, 20, 20, 0.8);
+  color: tan;
+  border: 1px ridge rgb(40, 40, 40);
+  padding: 8px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+  font-size: 0.9rem;
+  font-family: 'Arial Narrow', Arial, sans-serif;
+  transition: all 0.2s;
+}
+.back-btn:hover {
+  border-color: goldenrod;
+  color: goldenrod;
+}
+
+/* =============================================================================
+   LOBBY — Create / Join screens
+   ============================================================================= */
+#lobby-mode, #create-lobby-screen, #join-lobby-screen, #lobby-waiting {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.lobby-mode-title {
+  font-size: 1.2rem;
+  color: goldenrod;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  margin-bottom: 6px;
+}
+
+.lobby-mode-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Lobby form — password, code inputs */
+.lobby-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.lobby-form label {
+  font-size: 0.9rem;
+  color: tan;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.lobby-input {
+  background: rgba(10, 10, 10, 0.95);
+  border: 2px ridge rgb(40, 40, 40);
+  color: tan;
+  padding: 10px 16px;
+  font-size: 1.1rem;
+  font-family: 'Arial Narrow', Arial, sans-serif;
+  border-radius: 4px;
+  text-align: center;
+  width: 220px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.lobby-input:focus {
+  border-color: goldenrod;
+  box-shadow: 0 0 10px rgba(218, 165, 32, 0.2);
+}
+
+/* The big lobby code display */
+.lobby-code {
+  font-size: 3rem;
+  font-weight: bold;
+  color: goldenrod;
+  letter-spacing: 12px;
+  text-shadow: 0 0 20px rgba(218, 165, 32, 0.5);
+  background: rgba(10, 10, 10, 0.95);
+  padding: 15px 30px;
+  border: 2px ridge goldenrod;
+  border-radius: 4px;
+  margin: 10px 0;
+  user-select: all;
+}
+
+.lobby-code-label {
+  font-size: 0.85rem;
+  color: tan;
+}
+
+.lobby-hint {
+  font-size: 0.85rem;
+  color: #82735f;
+  font-style: italic;
+}
+
+/* Error message for failed joins */
+.lobby-error {
+  color: darkred;
+  font-size: 0.85rem;
+  font-weight: bold;
+  margin-top: 4px;
+}
+
+/* Waiting spinner animation */
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgb(40, 40, 40);
+  border-top-color: goldenrod;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 10px auto;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* =============================================================================
+   REDRAW SCREEN — Card swap phase at game start
+   ============================================================================= */
+#redraw-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: radial-gradient(ellipse at center, #1a1510 0%, #0a0a0a 70%);
+}
+
+.redraw-panel {
+  text-align: center;
+  padding: 30px;
+}
+
+.redraw-panel h2 {
+  color: goldenrod;
+  margin-bottom: 10px;
+  text-shadow: 0 0 15px rgba(218, 165, 32, 0.3);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.redraw-panel p {
+  color: tan;
+  margin-bottom: 8px;
+}
+
+.redraw-hand {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 20px 0;
+}
+
+.action-btn {
+  background: #4c390a66;
+  color: goldenrod;
+  border: 2px ridge #1d180b;
+  padding: 10px 30px;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 1rem;
+  font-family: 'Arial Narrow', Arial, sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 0 15px rgba(109, 82, 16, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.action-btn:hover {
+  background: #6d5210aa;
+  box-shadow: 0 0 25px rgba(218, 165, 32, 0.4);
+  transform: scale(1.03);
+}
+
+/* =============================================================================
+   GAME BOARD — Main playing area
+   ============================================================================= */
+#game-board {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  background: radial-gradient(ellipse at center, #151210 0%, #0a0a0a 100%);
+}
+
+/* ---- Player info bars (top and bottom) ---- */
+.player-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 12px;
+  background: rgba(10, 10, 10, 0.95);
+  min-height: 48px;
+  border-bottom: 1px solid rgb(25, 25, 25);
+}
+
+.player-info.your-info {
+  border-top: 1px solid rgb(25, 25, 25);
+  border-bottom: none;
+}
+
+.info-left, .info-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.faction-label {
+  font-weight: bold;
+  color: goldenrod;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+}
+
+/* Circular score badge */
+.score-total {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #000;
+  text-shadow: 0 0 5px white;
+  background: rgba(40, 40, 40, 0.8);
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgb(50, 50, 50);
+}
+
+/* Red hearts for lives (gems) */
+.lives {
+  font-size: 1.1rem;
+  letter-spacing: 6px;
+  color: goldenrod;
+  text-shadow: 0 0 8px rgba(218, 165, 32, 0.5);
+}
+
+.hand-count, .deck-count {
+  color: #82735f;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+}
+
+/* "YOUR TURN" indicator with pulse animation */
+.turn-indicator {
+  background: rgba(218, 165, 32, 0.2);
+  color: goldenrod;
+  padding: 4px 14px;
+  border-radius: 3px;
+  font-weight: bold;
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+  border: 1px solid goldenrod;
+  animation: turnGlow 2s ease-in-out infinite;
+  text-transform: uppercase;
+}
+
+@keyframes turnGlow {
+  0%, 100% { box-shadow: 0 0 8px rgba(218, 165, 32, 0.4); }
+  50% { box-shadow: 0 0 20px rgba(218, 165, 32, 0.7); }
+}
+
+/* Dimmed version when it's NOT your turn */
+.turn-indicator.not-your-turn {
+  background: rgba(30, 30, 30, 0.6);
+  color: #82735f;
+  border-color: rgb(40, 40, 40);
+  animation: none;
+  box-shadow: none;
+}
+
+/* "PASSED" indicator */
+.pass-indicator {
+  background: rgba(139, 0, 0, 0.4);
+  color: darkred;
+  padding: 4px 14px;
+  border-radius: 3px;
+  font-weight: bold;
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+  border: 1px solid darkred;
+  text-transform: uppercase;
+}
+
+/* Pass button — goldenrod bordered style */
+.pass-btn {
+  background: rgba(20, 20, 20, 0.8);
+  color: goldenrod;
+  border: 2px solid goldenrod;
+  padding: 6px 18px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.85rem;
+  font-family: 'Arial Narrow', Arial, sans-serif;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  transition: all 0.2s;
+}
+.pass-btn:hover {
+  background: rgba(218, 165, 32, 0.15);
+  box-shadow: 0 0 15px rgba(218, 165, 32, 0.3);
+}
+.pass-btn:disabled {
+  background: rgba(20, 20, 20, 0.5);
+  color: #555;
+  border-color: #333;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Leader ability button */
+.leader-btn {
+  background: rgba(20, 20, 20, 0.8);
+  color: goldenrod;
+  border: 2px solid #6b4c9a;
+  padding: 6px 18px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.85rem;
+  font-family: 'Arial Narrow', Arial, sans-serif;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  transition: all 0.2s;
+}
+.leader-btn:hover {
+  border-color: goldenrod;
+  box-shadow: 0 0 15px rgba(218, 165, 32, 0.3);
+}
+.leader-btn:disabled {
+  background: rgba(20, 20, 20, 0.5);
+  color: #555;
+  border-color: #333;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.leader-info {
+  font-size: 0.8rem;
+  color: #82735f;
+  letter-spacing: 1px;
+}
+
+/* =============================================================================
+   BOARD ROWS — Where cards are placed
+   ============================================================================= */
+.board {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0 4px;
+  gap: 2px;
+}
+
+/* Each row is a horizontal strip with a label, horn slot, and card area */
+.row {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  background: rgba(15, 15, 12, 0.6);
+  border: 1px solid rgb(25, 25, 25);
+  border-radius: 2px;
+  padding: 2px 4px;
+  min-height: 0;
+  transition: all 0.3s;
+}
+
+/* Color-coding for opponent and your rows */
+.opponent-row {
+  background: rgba(30, 15, 10, 0.4);
+  border-color: rgba(40, 20, 15, 0.5);
+}
+
+.your-row {
+  background: rgba(10, 15, 20, 0.4);
+  border-color: rgba(15, 25, 35, 0.5);
+}
+
+/* Highlight effect when a row is a valid drop target */
+.your-row.highlight {
+  background: rgba(218, 165, 32, 0.1);
+  border-color: goldenrod;
+  box-shadow: inset 0 0 20px rgba(218, 165, 32, 0.1);
+}
+
+/* Weather indicator on affected rows */
+.row.weather-affected {
+  background: rgba(40, 50, 70, 0.35) !important;
+  border-color: rgba(108, 166, 205, 0.4);
+  box-shadow: inset 0 0 30px rgba(108, 166, 205, 0.08);
+}
+
+/* Row label (icon + score) */
+.row-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 44px;
+  min-width: 44px;
+}
+
+.row-icon {
+  font-size: 1rem;
+  opacity: 0.7;
+}
+
+.row-score {
+  font-weight: bold;
+  font-size: 1rem;
+  color: goldenrod;
+  text-shadow: 0 0 6px rgba(218, 165, 32, 0.3);
+}
+
+/* Horn slot — small indicator next to each row */
+.horn-slot {
+  width: 26px;
+  min-width: 26px;
+  height: 85%;
+  border: 1px dashed rgb(35, 35, 30);
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  margin: 0 3px;
+  transition: all 0.3s;
+}
+
+/* Active horn indicator */
+.horn-slot.active {
+  background: rgba(218, 165, 32, 0.15);
+  border-color: goldenrod;
+  border-style: solid;
+  box-shadow: 0 0 10px rgba(218, 165, 32, 0.2);
+}
+
+/* Card area — scrollable horizontal strip */
+.card-area {
+  flex: 1;
+  display: flex;
+  gap: 3px;
+  overflow-x: auto;
+  align-items: center;
+  padding: 2px;
+  min-height: 0;
+}
+
+/* =============================================================================
+   WEATHER ZONE — Center divider showing active weather effects
+   ============================================================================= */
+.weather-zone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 3px;
+  background: rgba(10, 10, 10, 0.8);
+  border-top: 1px solid rgb(25, 25, 25);
+  border-bottom: 1px solid rgb(25, 25, 25);
+  min-height: 28px;
+  font-size: 0.85rem;
+}
+
+.weather-icon {
+  color: #6ca6cd;
+  font-weight: bold;
+  letter-spacing: 1px;
+  animation: weatherPulse 2.5s ease-in-out infinite;
+  text-shadow: 0 0 8px rgba(108, 166, 205, 0.4);
+}
+
+.weather-clear {
+  color: #555;
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+@keyframes weatherPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* =============================================================================
+   CARDS — Visual representation of game cards
+   ============================================================================= */
+.card {
+  width: 66px;
+  min-width: 66px;
+  height: 92px;
+  background: linear-gradient(180deg, #1a1812 0%, #12100c 100%);
+  border: 1.5px solid rgb(50, 45, 35);
+  border-radius: 3px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3px;
+  font-size: 0.55rem;
+  cursor: default;
+  transition: margin-bottom 0.05s, transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+  position: relative;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+/* Card type visual variants */
+.card.hero {
+  border-color: goldenrod;
+  background: linear-gradient(180deg, #2a2210 0%, #1a180c 100%);
+  box-shadow: 0 2px 8px rgba(218, 165, 32, 0.2);
+}
+
+.card.spy {
+  border-color: #993333;
+}
+
+.card.weather-card {
+  border-color: #4a7a99;
+  background: linear-gradient(180deg, #10181e 0%, #0c1318 100%);
+}
+
+.card.special-card {
+  border-color: #6a3a8a;
+  background: linear-gradient(180deg, #1a1020 0%, #140c18 100%);
+}
+
+.card.medic-card {
+  border-color: #3a8a3a;
+}
+
+.card.bond-card {
+  border-color: #8a6a30;
+}
+
+.card.muster-card {
+  border-color: #44aacc;
+}
+
+/* Card art image — fills entire card as background */
+.card .card-art {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 2px;
+  z-index: 0;
+}
+
+/* Overlay for text on top of card art */
+.card .card-overlay {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.6) 60%, rgba(0,0,0,0.85) 100%);
+  padding: 3px;
+}
+
+/* Strength badge (top-left circle) */
+.card .card-strength {
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: #000;
+  text-shadow: 0 0 3px white;
+  background: rgba(40, 38, 30, 0.9);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  line-height: 1;
+  border: 1px solid rgb(60, 55, 40);
+}
+
+.card.hero .card-strength {
+  background: rgba(139, 105, 20, 0.9);
+  border-color: goldenrod;
+  color: #000;
+}
+
+/* Card name text */
+.card .card-name {
+  text-align: center;
+  font-size: 0.5rem;
+  line-height: 1.2;
+  color: tan;
+  max-height: 32px;
+  overflow: hidden;
+  word-break: break-word;
+}
+
+/* Row indicator (bottom of card) */
+.card .card-row-indicator {
+  font-size: 0.5rem;
+  color: #82735f;
+  margin-top: auto;
+}
+
+/* Ability badge (small text below name) */
+.card .card-ability {
+  font-size: 0.45rem;
+  color: #9f7d3e;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ---- Hand cards — interactive, clickable ---- */
+.card.hand-card {
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.card.hand-card:hover {
+  transform: translateY(-14px) scale(1.1);
+  border-color: goldenrod;
+  box-shadow: 0 0 20px rgba(218, 165, 32, 0.5);
+  z-index: 10;
+}
+
+/* Selected card (for redraw) — goldenrod glow */
+.card.selected {
+  border-color: goldenrod;
+  transform: translateY(-8px);
+  box-shadow: 0 0 25px rgba(218, 165, 32, 0.6);
+}
+
+/* Decoy target highlight */
+.card.decoy-target {
+  cursor: pointer;
+}
+.card.decoy-target:hover {
+  border-color: #44cc44;
+  box-shadow: 0 0 15px rgba(68, 204, 68, 0.4);
+}
+
+/* =============================================================================
+   HAND CONTAINER — Bottom strip holding the player's hand cards
+   ============================================================================= */
+#hand-container {
+  background: rgba(10, 10, 10, 0.95);
+  border-top: 1px solid rgb(25, 25, 25);
+  padding: 6px 10px;
+  min-height: 104px;
+  max-height: 114px;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+#hand {
+  display: flex;
+  gap: 4px;
+  align-items: flex-end;
+  justify-content: center;
+  min-height: 94px;
+}
+
+/* =============================================================================
+   MODALS — Overlays for round end, game over, horn selection, etc.
+   ============================================================================= */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal-content {
+  background: rgba(15, 15, 12, 0.97);
+  border: 2px ridge rgb(40, 40, 40);
+  border-radius: 4px;
+  padding: 30px 40px;
+  text-align: center;
+  max-width: 500px;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.6), inset 0 0 30px rgba(0, 0, 0, 0.3);
+}
+
+.modal-content h2 {
+  color: goldenrod;
+  margin-bottom: 12px;
+  text-shadow: 0 0 15px rgba(218, 165, 32, 0.3);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.modal-content h3 {
+  color: tan;
+  margin-bottom: 15px;
+  letter-spacing: 2px;
+}
+
+.modal-content p {
+  color: #82735f;
+  margin-bottom: 15px;
+  letter-spacing: 1px;
+}
+
+.modal-btn {
+  background: #4c390a66;
+  color: goldenrod;
+  border: 2px ridge #1d180b;
+  padding: 10px 24px;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  margin: 5px;
+  font-size: 0.95rem;
+  font-family: 'Arial Narrow', Arial, sans-serif;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  transition: all 0.2s;
+  box-shadow: 0 0 10px rgba(109, 82, 16, 0.2);
+}
+
+.modal-btn:hover {
+  background: #6d5210aa;
+  box-shadow: 0 0 20px rgba(218, 165, 32, 0.4);
+  transform: scale(1.03);
+}
+
+.cancel-btn {
+  background: rgba(80, 20, 20, 0.4);
+  color: #cc6666;
+  border-color: darkred;
+  box-shadow: none;
+}
+.cancel-btn:hover {
+  background: rgba(120, 30, 30, 0.5);
+  box-shadow: 0 0 15px rgba(139, 0, 0, 0.3);
+  color: #ee8888;
+}
+
+/* Leader reveal cards (for viewOpponent) */
+.leader-reveal-cards {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin: 15px 0;
+}
+
+/* =============================================================================
+   DECOY BANNER — Shown when player needs to select a swap target
+   ============================================================================= */
+#decoy-banner {
+  position: fixed;
+  bottom: 120px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(20, 40, 20, 0.9);
+  border: 2px ridge rgb(40, 60, 40);
+  color: #44cc44;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-weight: bold;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  letter-spacing: 1px;
+  box-shadow: 0 0 20px rgba(68, 204, 68, 0.15);
+}
+
+/* =============================================================================
+   NOTIFICATION TOAST — Brief messages shown at top of screen
+   ============================================================================= */
+.toast {
+  position: fixed;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(20, 20, 15, 0.95);
+  color: goldenrod;
+  padding: 12px 24px;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 1rem;
+  z-index: 200;
+  border: 1px solid goldenrod;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  box-shadow: 0 0 25px rgba(218, 165, 32, 0.3);
+  animation: toastFade 2.5s ease-in-out forwards;
+}
+
+@keyframes toastFade {
+  0% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+  15% { opacity: 1; transform: translateX(-50%) translateY(0); }
+  80% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* =============================================================================
+   RESPONSIVE — Adjustments for smaller screens
+   ============================================================================= */
+@media (max-width: 768px) {
+  .card {
+    width: 56px;
+    min-width: 56px;
+    height: 78px;
+    font-size: 0.45rem;
+  }
+  .card .card-strength {
+    width: 17px;
+    height: 17px;
+    font-size: 0.7rem;
+  }
+  .card .card-name {
+    font-size: 0.4rem;
+  }
+  .row-label { width: 34px; min-width: 34px; }
+  .horn-slot { width: 22px; min-width: 22px; }
+}

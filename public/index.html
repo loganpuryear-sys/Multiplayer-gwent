@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multiplayer Gwent</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ====================================================================
+       LOBBY SCREEN — Faction & leader selection, matchmaking
+       ==================================================================== -->
+  <div id="lobby">
+    <h1>GWENT</h1>
+    <h2>Multiplayer</h2>
+
+    <!-- Step 1: Choose Faction -->
+    <div class="faction-select" id="faction-select">
+      <p>Choose your faction:</p>
+      <button class="faction-btn" data-faction="northern">
+        <span class="faction-icon">&#9876;</span><!-- Crossed swords -->
+        Northern Realms
+        <span class="faction-passive">Win round = draw a card</span>
+      </button>
+      <button class="faction-btn" data-faction="nilfgaard">
+        <span class="faction-icon">&#9788;</span><!-- Sun -->
+        Nilfgaard
+        <span class="faction-passive">Wins tied rounds</span>
+      </button>
+      <button class="faction-btn" data-faction="scoiatael">
+        <span class="faction-icon">&#127811;</span><!-- Leaf -->
+        Scoia'tael
+        <span class="faction-passive">Choose who goes first each round</span>
+      </button>
+      <button class="faction-btn" data-faction="monsters">
+        <span class="faction-icon">&#128128;</span><!-- Skull -->
+        Monsters
+        <span class="faction-passive">1 random unit stays after each round</span>
+      </button>
+      <button class="faction-btn" data-faction="skellige">
+        <span class="faction-icon">&#9875;</span><!-- Anchor -->
+        Skellige
+        <span class="faction-passive">2 cards revived from graveyard each round</span>
+      </button>
+    </div>
+
+    <!-- Step 2: Choose Leader (shown after faction pick) -->
+    <div class="leader-select" id="leader-select" style="display:none;">
+      <p>Choose your leader:</p>
+      <div id="leader-options"></div>
+      <button class="back-btn" id="back-to-faction">Back</button>
+    </div>
+
+    <!-- Step 3: Create or Join a Lobby -->
+    <div id="lobby-mode" style="display:none;">
+      <p class="lobby-mode-title">Play with a friend</p>
+      <div class="lobby-mode-buttons">
+        <button class="faction-btn" id="create-lobby-btn">
+          <span class="faction-icon">&#9733;</span>
+          Create Lobby
+          <span class="faction-passive">Host a game — share the code</span>
+        </button>
+        <button class="faction-btn" id="join-lobby-btn">
+          <span class="faction-icon">&#9654;</span>
+          Join Lobby
+          <span class="faction-passive">Enter a friend's lobby code</span>
+        </button>
+      </div>
+      <button class="back-btn" id="back-to-leader">Back</button>
+    </div>
+
+    <!-- Create Lobby — Set password, get code -->
+    <div id="create-lobby-screen" style="display:none;">
+      <p class="lobby-mode-title">Create Lobby</p>
+      <div class="lobby-form">
+        <label for="create-password">Set a password:</label>
+        <input type="text" id="create-password" class="lobby-input" placeholder="Password" autocomplete="off">
+        <button class="action-btn" id="create-lobby-confirm">Create</button>
+      </div>
+      <button class="back-btn" id="back-to-lobby-mode-create">Back</button>
+    </div>
+
+    <!-- Waiting for friend to join (lobby created, showing code) -->
+    <div id="lobby-waiting" style="display:none;">
+      <p class="lobby-mode-title">Lobby Created!</p>
+      <p class="lobby-code-label">Share this code with your friend:</p>
+      <div class="lobby-code" id="lobby-code-display">----</div>
+      <p class="lobby-hint">Waiting for your friend to join...</p>
+      <div class="spinner"></div>
+    </div>
+
+    <!-- Join Lobby — Enter code + password -->
+    <div id="join-lobby-screen" style="display:none;">
+      <p class="lobby-mode-title">Join Lobby</p>
+      <div class="lobby-form">
+        <label for="join-code">Lobby code:</label>
+        <input type="text" id="join-code" class="lobby-input" placeholder="ABCD" maxlength="4" autocomplete="off">
+        <label for="join-password">Password:</label>
+        <input type="text" id="join-password" class="lobby-input" placeholder="Password" autocomplete="off">
+        <button class="action-btn" id="join-lobby-confirm">Join</button>
+        <p class="lobby-error" id="join-error" style="display:none;"></p>
+      </div>
+      <button class="back-btn" id="back-to-lobby-mode-join">Back</button>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       REDRAW PHASE — Swap up to 2 cards before the game starts
+       ==================================================================== -->
+  <div id="redraw-screen" style="display:none;">
+    <div class="redraw-panel">
+      <h2>Redraw Phase</h2>
+      <p>Click up to 2 cards to swap them for random cards from your deck.</p>
+      <p id="redraw-count">Redraws: 0 / 2</p>
+      <div id="redraw-hand" class="redraw-hand"></div>
+      <button id="redraw-done-btn" class="action-btn">Done</button>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       GAME BOARD — The main playing field
+       ==================================================================== -->
+  <div id="game-board" style="display:none;">
+
+    <!-- ---- OPPONENT INFO BAR ---- -->
+    <div class="player-info opponent-info">
+      <div class="info-left">
+        <span class="faction-label" id="opp-faction">Opponent</span>
+        <span class="score-total" id="opp-score">0</span>
+        <span class="lives" id="opp-lives"></span>
+        <span class="hand-count" id="opp-hand-count">Cards: 10</span>
+        <span class="deck-count" id="opp-deck-count">Deck: 0</span>
+        <span class="pass-indicator" id="opp-passed" style="display:none;">PASSED</span>
+      </div>
+      <div class="info-right">
+        <span class="leader-info" id="opp-leader-info"></span>
+      </div>
+    </div>
+
+    <!-- ---- GAME BOARD ROWS ---- -->
+    <div class="board">
+      <!-- Opponent's rows (displayed top-down: siege, ranged, melee) -->
+      <div class="row opponent-row" id="opp-siege-row">
+        <div class="row-label">
+          <div class="row-icon">&#127984;</div><!-- Castle -->
+          <div class="row-score" id="opp-siege-score">0</div>
+        </div>
+        <div class="horn-slot" id="opp-siege-horn"></div>
+        <div class="card-area" id="opp-siege-cards"></div>
+      </div>
+
+      <div class="row opponent-row" id="opp-ranged-row">
+        <div class="row-label">
+          <div class="row-icon">&#127993;</div><!-- Bow -->
+          <div class="row-score" id="opp-ranged-score">0</div>
+        </div>
+        <div class="horn-slot" id="opp-ranged-horn"></div>
+        <div class="card-area" id="opp-ranged-cards"></div>
+      </div>
+
+      <div class="row opponent-row" id="opp-melee-row">
+        <div class="row-label">
+          <div class="row-icon">&#9876;</div><!-- Swords -->
+          <div class="row-score" id="opp-melee-score">0</div>
+        </div>
+        <div class="horn-slot" id="opp-melee-horn"></div>
+        <div class="card-area" id="opp-melee-cards"></div>
+      </div>
+
+      <!-- ---- WEATHER ZONE (center of board) ---- -->
+      <div class="weather-zone" id="weather-zone">
+        <span id="weather-frost" class="weather-icon" style="display:none;">Frost (Melee)</span>
+        <span id="weather-fog" class="weather-icon" style="display:none;">Fog (Ranged)</span>
+        <span id="weather-rain" class="weather-icon" style="display:none;">Rain (Siege)</span>
+        <span id="weather-clear" class="weather-clear">No Weather</span>
+      </div>
+
+      <!-- Your rows (displayed top-down: melee, ranged, siege) -->
+      <div class="row your-row" id="your-melee-row">
+        <div class="row-label">
+          <div class="row-icon">&#9876;</div>
+          <div class="row-score" id="your-melee-score">0</div>
+        </div>
+        <div class="horn-slot" id="your-melee-horn"></div>
+        <div class="card-area" id="your-melee-cards"></div>
+      </div>
+
+      <div class="row your-row" id="your-ranged-row">
+        <div class="row-label">
+          <div class="row-icon">&#127993;</div>
+          <div class="row-score" id="your-ranged-score">0</div>
+        </div>
+        <div class="horn-slot" id="your-ranged-horn"></div>
+        <div class="card-area" id="your-ranged-cards"></div>
+      </div>
+
+      <div class="row your-row" id="your-siege-row">
+        <div class="row-label">
+          <div class="row-icon">&#127984;</div>
+          <div class="row-score" id="your-siege-score">0</div>
+        </div>
+        <div class="horn-slot" id="your-siege-horn"></div>
+        <div class="card-area" id="your-siege-cards"></div>
+      </div>
+    </div>
+
+    <!-- ---- YOUR INFO BAR ---- -->
+    <div class="player-info your-info">
+      <div class="info-left">
+        <span class="faction-label" id="your-faction">You</span>
+        <span class="score-total" id="your-score">0</span>
+        <span class="lives" id="your-lives"></span>
+        <span class="deck-count" id="your-deck-count">Deck: 0</span>
+        <span class="turn-indicator" id="turn-indicator">YOUR TURN</span>
+        <span class="pass-indicator" id="your-passed" style="display:none;">PASSED</span>
+        <button id="pass-btn" class="pass-btn">PASS</button>
+        <button id="leader-btn" class="leader-btn" title="">LEADER</button>
+      </div>
+    </div>
+
+    <!-- ---- YOUR HAND (bottom of screen) ---- -->
+    <div id="hand-container">
+      <div id="hand"></div>
+    </div>
+
+    <!-- ---- HORN ROW SELECTION MODAL ---- -->
+    <div id="horn-modal" class="modal" style="display:none;">
+      <div class="modal-content">
+        <h3>Choose a row for Commander's Horn:</h3>
+        <button class="modal-btn" data-row="melee">Melee</button>
+        <button class="modal-btn" data-row="ranged">Ranged</button>
+        <button class="modal-btn" data-row="siege">Siege</button>
+        <button class="modal-btn cancel-btn" id="horn-cancel">Cancel</button>
+      </div>
+    </div>
+
+    <!-- ---- ROUND END OVERLAY ---- -->
+    <div id="round-overlay" class="modal" style="display:none;">
+      <div class="modal-content">
+        <h2 id="round-result-text"></h2>
+        <p id="round-scores-text"></p>
+        <button id="round-continue-btn" class="modal-btn">Continue</button>
+      </div>
+    </div>
+
+    <!-- ---- GAME OVER OVERLAY ---- -->
+    <div id="gameover-overlay" class="modal" style="display:none;">
+      <div class="modal-content">
+        <h2 id="gameover-text"></h2>
+        <p id="gameover-scores"></p>
+        <button id="gameover-btn" class="modal-btn" onclick="location.reload()">Play Again</button>
+      </div>
+    </div>
+
+    <!-- ---- LEADER REVEAL OVERLAY (for viewOpponent ability) ---- -->
+    <div id="leader-overlay" class="modal" style="display:none;">
+      <div class="modal-content">
+        <h2 id="leader-overlay-title">Leader Ability</h2>
+        <div id="leader-overlay-cards" class="leader-reveal-cards"></div>
+        <p id="leader-overlay-text"></p>
+        <button id="leader-overlay-close" class="modal-btn">OK</button>
+      </div>
+    </div>
+
+    <!-- ---- AGILE ROW SELECTION MODAL ---- -->
+    <div id="agile-modal" class="modal" style="display:none;">
+      <div class="modal-content">
+        <h3>Choose a row for this agile unit:</h3>
+        <button class="modal-btn" data-row="melee">Melee</button>
+        <button class="modal-btn" data-row="ranged">Ranged</button>
+        <button class="modal-btn cancel-btn" id="agile-cancel">Cancel</button>
+      </div>
+    </div>
+
+    <!-- ---- SCOIA'TAEL CHOOSE FIRST MODAL ---- -->
+    <div id="choose-first-modal" class="modal" style="display:none;">
+      <div class="modal-content">
+        <h3>Scoia'tael Passive: Choose who goes first</h3>
+        <p>You may choose who takes the first turn this round.</p>
+        <button class="modal-btn" id="choose-first-me">I go first</button>
+        <button class="modal-btn" id="choose-first-opp">Opponent goes first</button>
+      </div>
+    </div>
+
+    <!-- ---- DECOY MODE BANNER ---- -->
+    <div id="decoy-banner" style="display:none;">
+      Click one of your non-hero units on the board to swap with Decoy
+      <button id="decoy-cancel" class="modal-btn cancel-btn">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Load Socket.IO client (served automatically by the server) -->
+  <script src="/socket.io/socket.io.js"></script>
+  <!-- Load card definitions (shared with server) -->
+  <script src="cards.js"></script>
+  <!-- Load client game logic -->
+  <script src="game.js"></script>
+</body>
+</html>
